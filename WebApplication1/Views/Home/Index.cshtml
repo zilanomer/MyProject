@@ -1,0 +1,115 @@
+﻿@{
+    ViewData["Title"] = "Index";
+}
+
+
+<div class="container pt-5">
+    <div class="row">
+        <div class="col-sm-6 p-3 bg-primary text-white">
+            <h2>Yeni Kişi Ekle</h2>
+            <form action="home/ekle" method="post" id="">
+
+                <div class="form-group">
+                    <label for="name">İsim Soyisim</label>
+                    <input type="text" class="form-control" id="name" name="Isim" required>
+                </div>
+                <div class="form-group">
+                    <label for="fatherName">Baba Adı:</label>
+                    <input type="text" class="form-control" id="fatherName" name="BabaAdi" required>
+                </div>
+                <div class="form-group">
+                    <label for="motherName">Anne Adı:</label>
+                    <input type="text" class="form-control" id="motherName" name="AnneAdi" required>
+                </div>
+                <div class="form-group">
+                    <label for="age">Yas:</label>
+                    <input type="number" class="form-control" id="age" name="Yas" required>
+                </div>
+                <div class="form-group">
+                    <label for="gender">Cinsiyet:</label>
+                    <select class="form-control" id="gender" name="Cinsiyet" required>
+                        <option value="">Seçiniz..</option>
+                        <option value="Erkek">Erkek</option>
+                        <option value="Kadın">Kadın</option>
+                    </select>
+                </div>
+                <div style="text-align:center;">
+                    <button type="submit" class="btn btn-primary btn-lg">Ekle</button></div>
+                
+            </form>
+            @if (TempData["Mesaj"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["Mesaj"]
+                </div>
+            }
+        </div>
+
+        <div class="col-sm-6 p-3 bg-light  text-black" >
+             <h2>Detayları Görüntüle</h2>
+            <div style="text-align:center" class="mb-5">
+                <label for="cmbKisiler">Kişi Seçin:</label>
+                <select  id="cmbKisiler" asp-items="@Model.Kisiler" style="width: 228px; height: 30px;">></select>
+            </div>
+
+            <div id="kisiDetails"></div>
+        </div>
+    </div>
+
+
+
+</div>
+@section Scripts {
+<script>
+        $(function () {
+            $('#cmbKisiler').on('change', function () {
+                var selectedKisiId = $(this).val();
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/home/GetKisiDetails/' + selectedKisiId,
+                    success: function (data) {
+                       $('#kisiDetails').html(`
+        <div class="card">
+            <div class="card-header">
+                <h5>${data.isim}</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Baba Adı:</strong> ${data.babaAdi}</p>
+                <p><strong>Anne Adı:</strong> ${data.anneAdi}</p>
+                <p><strong>Yaş:</strong> ${data.yas}</p>
+                <p><strong>Cinsiyet:</strong> ${data.cinsiyet}</p>
+            </div>
+        </div>
+    `);
+
+                    },
+                    error: function () {
+                        alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+                    }
+                });
+            });
+        });
+</script>
+}
+
+<script>
+        $('#kisiEkleForm').submit(function(event) {
+        event.preventDefault();
+
+        var formData = $(this).serialize();
+        $.ajax({
+            url: '/home/ekle',
+            type: 'post',
+            data: formData,
+            success: function(result) {
+                // İşlem başarılı olduğunda yapılacaklar
+            },
+            error: function(result) {
+                // İşlem başarısız olduğunda yapılacaklar
+            }
+        });
+    });
+</script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
